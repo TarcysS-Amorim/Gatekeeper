@@ -1,0 +1,491 @@
+export type Json =
+  | string
+  | number
+  | boolean
+  | null
+  | { [key: string]: Json | undefined }
+  | Json[]
+
+export type Database = {
+  // Allows to automatically instantiate createClient with right options
+  // instead of createClient<Database, { PostgrestVersion: 'XX' }>(URL, KEY)
+  __InternalSupabase: {
+    PostgrestVersion: "14.1"
+  }
+  public: {
+    Tables: {
+      cost_centers: {
+        Row: {
+          code: string | null
+          created_at: string
+          id: string
+          name: string
+        }
+        Insert: {
+          code?: string | null
+          created_at?: string
+          id?: string
+          name: string
+        }
+        Update: {
+          code?: string | null
+          created_at?: string
+          id?: string
+          name?: string
+        }
+        Relationships: []
+      }
+      employees: {
+        Row: {
+          active: boolean
+          cost_center_id: string | null
+          created_at: string
+          department: string | null
+          id: string
+          name: string
+          registration: string | null
+          updated_at: string
+        }
+        Insert: {
+          active?: boolean
+          cost_center_id?: string | null
+          created_at?: string
+          department?: string | null
+          id?: string
+          name: string
+          registration?: string | null
+          updated_at?: string
+        }
+        Update: {
+          active?: boolean
+          cost_center_id?: string | null
+          created_at?: string
+          department?: string | null
+          id?: string
+          name?: string
+          registration?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "employees_cost_center_id_fkey"
+            columns: ["cost_center_id"]
+            isOneToOne: false
+            referencedRelation: "cost_centers"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      gate_entries: {
+        Row: {
+          classification: Database["public"]["Enums"]["gate_classification"]
+          company: string | null
+          created_at: string
+          created_by: string | null
+          entry_date: string
+          entry_time: string | null
+          id: string
+          material: string | null
+          name: string
+          net_weight: number | null
+          nf: string | null
+          notes: string | null
+          plate: string | null
+          purchase_order: string | null
+          quantity: number | null
+          total_price: number | null
+          unit_price: number | null
+          updated_at: string
+        }
+        Insert: {
+          classification?: Database["public"]["Enums"]["gate_classification"]
+          company?: string | null
+          created_at?: string
+          created_by?: string | null
+          entry_date?: string
+          entry_time?: string | null
+          id?: string
+          material?: string | null
+          name: string
+          net_weight?: number | null
+          nf?: string | null
+          notes?: string | null
+          plate?: string | null
+          purchase_order?: string | null
+          quantity?: number | null
+          total_price?: number | null
+          unit_price?: number | null
+          updated_at?: string
+        }
+        Update: {
+          classification?: Database["public"]["Enums"]["gate_classification"]
+          company?: string | null
+          created_at?: string
+          created_by?: string | null
+          entry_date?: string
+          entry_time?: string | null
+          id?: string
+          material?: string | null
+          name?: string
+          net_weight?: number | null
+          nf?: string | null
+          notes?: string | null
+          plate?: string | null
+          purchase_order?: string | null
+          quantity?: number | null
+          total_price?: number | null
+          unit_price?: number | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      lockers: {
+        Row: {
+          allocated_at: string | null
+          created_at: string
+          employee_id: string | null
+          id: string
+          locker_group: Database["public"]["Enums"]["locker_group"]
+          notes: string | null
+          number: string
+          updated_at: string
+        }
+        Insert: {
+          allocated_at?: string | null
+          created_at?: string
+          employee_id?: string | null
+          id?: string
+          locker_group: Database["public"]["Enums"]["locker_group"]
+          notes?: string | null
+          number: string
+          updated_at?: string
+        }
+        Update: {
+          allocated_at?: string | null
+          created_at?: string
+          employee_id?: string | null
+          id?: string
+          locker_group?: Database["public"]["Enums"]["locker_group"]
+          notes?: string | null
+          number?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "lockers_employee_id_fkey"
+            columns: ["employee_id"]
+            isOneToOne: false
+            referencedRelation: "employees"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      power_outages: {
+        Row: {
+          attendant_name: string | null
+          created_at: string
+          created_by: string | null
+          doorman_name: string | null
+          duration_minutes: number | null
+          id: string
+          notes: string | null
+          outage_date: string
+          protocol: string | null
+          return_time: string | null
+          start_time: string
+          updated_at: string
+        }
+        Insert: {
+          attendant_name?: string | null
+          created_at?: string
+          created_by?: string | null
+          doorman_name?: string | null
+          duration_minutes?: number | null
+          id?: string
+          notes?: string | null
+          outage_date?: string
+          protocol?: string | null
+          return_time?: string | null
+          start_time: string
+          updated_at?: string
+        }
+        Update: {
+          attendant_name?: string | null
+          created_at?: string
+          created_by?: string | null
+          doorman_name?: string | null
+          duration_minutes?: number | null
+          id?: string
+          notes?: string | null
+          outage_date?: string
+          protocol?: string | null
+          return_time?: string | null
+          start_time?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      profiles: {
+        Row: {
+          created_at: string
+          email: string | null
+          full_name: string | null
+          id: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          email?: string | null
+          full_name?: string | null
+          id?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          email?: string | null
+          full_name?: string | null
+          id?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      user_roles: {
+        Row: {
+          id: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Insert: {
+          id?: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Update: {
+          id?: string
+          role?: Database["public"]["Enums"]["app_role"]
+          user_id?: string
+        }
+        Relationships: []
+      }
+      vehicles: {
+        Row: {
+          brand: string | null
+          color: string | null
+          created_at: string
+          created_by: string | null
+          employee_id: string | null
+          id: string
+          model: string | null
+          notes: string | null
+          plate: string
+          status: Database["public"]["Enums"]["vehicle_status"]
+          updated_at: string
+          year: number | null
+        }
+        Insert: {
+          brand?: string | null
+          color?: string | null
+          created_at?: string
+          created_by?: string | null
+          employee_id?: string | null
+          id?: string
+          model?: string | null
+          notes?: string | null
+          plate: string
+          status?: Database["public"]["Enums"]["vehicle_status"]
+          updated_at?: string
+          year?: number | null
+        }
+        Update: {
+          brand?: string | null
+          color?: string | null
+          created_at?: string
+          created_by?: string | null
+          employee_id?: string | null
+          id?: string
+          model?: string | null
+          notes?: string | null
+          plate?: string
+          status?: Database["public"]["Enums"]["vehicle_status"]
+          updated_at?: string
+          year?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "vehicles_employee_id_fkey"
+            columns: ["employee_id"]
+            isOneToOne: false
+            referencedRelation: "employees"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+    }
+    Views: {
+      [_ in never]: never
+    }
+    Functions: {
+      get_user_role: {
+        Args: { _user_id: string }
+        Returns: Database["public"]["Enums"]["app_role"]
+      }
+      has_role: {
+        Args: {
+          _role: Database["public"]["Enums"]["app_role"]
+          _user_id: string
+        }
+        Returns: boolean
+      }
+      is_admin_or_supervisor: { Args: { _user_id: string }; Returns: boolean }
+    }
+    Enums: {
+      app_role: "admin" | "supervisor" | "doorman"
+      gate_classification:
+        | "PRESTADOR_ISENTO"
+        | "VISITANTE"
+        | "CLIENTE"
+        | "FORNECEDOR"
+      locker_group: "FEM_A" | "MASC_A" | "MASC_B"
+      vehicle_status: "ACTIVE" | "PENDING" | "BLOCKED"
+    }
+    CompositeTypes: {
+      [_ in never]: never
+    }
+  }
+}
+
+type DatabaseWithoutInternals = Omit<Database, "__InternalSupabase">
+
+type DefaultSchema = DatabaseWithoutInternals[Extract<keyof Database, "public">]
+
+export type Tables<
+  DefaultSchemaTableNameOrOptions extends
+    | keyof (DefaultSchema["Tables"] & DefaultSchema["Views"])
+    | { schema: keyof DatabaseWithoutInternals },
+  TableName extends DefaultSchemaTableNameOrOptions extends {
+    schema: keyof DatabaseWithoutInternals
+  }
+    ? keyof (DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"] &
+        DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Views"])
+    : never = never,
+> = DefaultSchemaTableNameOrOptions extends {
+  schema: keyof DatabaseWithoutInternals
+}
+  ? (DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"] &
+      DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Views"])[TableName] extends {
+      Row: infer R
+    }
+    ? R
+    : never
+  : DefaultSchemaTableNameOrOptions extends keyof (DefaultSchema["Tables"] &
+        DefaultSchema["Views"])
+    ? (DefaultSchema["Tables"] &
+        DefaultSchema["Views"])[DefaultSchemaTableNameOrOptions] extends {
+        Row: infer R
+      }
+      ? R
+      : never
+    : never
+
+export type TablesInsert<
+  DefaultSchemaTableNameOrOptions extends
+    | keyof DefaultSchema["Tables"]
+    | { schema: keyof DatabaseWithoutInternals },
+  TableName extends DefaultSchemaTableNameOrOptions extends {
+    schema: keyof DatabaseWithoutInternals
+  }
+    ? keyof DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"]
+    : never = never,
+> = DefaultSchemaTableNameOrOptions extends {
+  schema: keyof DatabaseWithoutInternals
+}
+  ? DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"][TableName] extends {
+      Insert: infer I
+    }
+    ? I
+    : never
+  : DefaultSchemaTableNameOrOptions extends keyof DefaultSchema["Tables"]
+    ? DefaultSchema["Tables"][DefaultSchemaTableNameOrOptions] extends {
+        Insert: infer I
+      }
+      ? I
+      : never
+    : never
+
+export type TablesUpdate<
+  DefaultSchemaTableNameOrOptions extends
+    | keyof DefaultSchema["Tables"]
+    | { schema: keyof DatabaseWithoutInternals },
+  TableName extends DefaultSchemaTableNameOrOptions extends {
+    schema: keyof DatabaseWithoutInternals
+  }
+    ? keyof DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"]
+    : never = never,
+> = DefaultSchemaTableNameOrOptions extends {
+  schema: keyof DatabaseWithoutInternals
+}
+  ? DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"][TableName] extends {
+      Update: infer U
+    }
+    ? U
+    : never
+  : DefaultSchemaTableNameOrOptions extends keyof DefaultSchema["Tables"]
+    ? DefaultSchema["Tables"][DefaultSchemaTableNameOrOptions] extends {
+        Update: infer U
+      }
+      ? U
+      : never
+    : never
+
+export type Enums<
+  DefaultSchemaEnumNameOrOptions extends
+    | keyof DefaultSchema["Enums"]
+    | { schema: keyof DatabaseWithoutInternals },
+  EnumName extends DefaultSchemaEnumNameOrOptions extends {
+    schema: keyof DatabaseWithoutInternals
+  }
+    ? keyof DatabaseWithoutInternals[DefaultSchemaEnumNameOrOptions["schema"]]["Enums"]
+    : never = never,
+> = DefaultSchemaEnumNameOrOptions extends {
+  schema: keyof DatabaseWithoutInternals
+}
+  ? DatabaseWithoutInternals[DefaultSchemaEnumNameOrOptions["schema"]]["Enums"][EnumName]
+  : DefaultSchemaEnumNameOrOptions extends keyof DefaultSchema["Enums"]
+    ? DefaultSchema["Enums"][DefaultSchemaEnumNameOrOptions]
+    : never
+
+export type CompositeTypes<
+  PublicCompositeTypeNameOrOptions extends
+    | keyof DefaultSchema["CompositeTypes"]
+    | { schema: keyof DatabaseWithoutInternals },
+  CompositeTypeName extends PublicCompositeTypeNameOrOptions extends {
+    schema: keyof DatabaseWithoutInternals
+  }
+    ? keyof DatabaseWithoutInternals[PublicCompositeTypeNameOrOptions["schema"]]["CompositeTypes"]
+    : never = never,
+> = PublicCompositeTypeNameOrOptions extends {
+  schema: keyof DatabaseWithoutInternals
+}
+  ? DatabaseWithoutInternals[PublicCompositeTypeNameOrOptions["schema"]]["CompositeTypes"][CompositeTypeName]
+  : PublicCompositeTypeNameOrOptions extends keyof DefaultSchema["CompositeTypes"]
+    ? DefaultSchema["CompositeTypes"][PublicCompositeTypeNameOrOptions]
+    : never
+
+export const Constants = {
+  public: {
+    Enums: {
+      app_role: ["admin", "supervisor", "doorman"],
+      gate_classification: [
+        "PRESTADOR_ISENTO",
+        "VISITANTE",
+        "CLIENTE",
+        "FORNECEDOR",
+      ],
+      locker_group: ["FEM_A", "MASC_A", "MASC_B"],
+      vehicle_status: ["ACTIVE", "PENDING", "BLOCKED"],
+    },
+  },
+} as const
