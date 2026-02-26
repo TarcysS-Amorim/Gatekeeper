@@ -40,16 +40,18 @@ export default function ArmariosPage() {
   const [form, setForm] = useState(emptyForm);
   const [selectedEmployee, setSelectedEmployee] = useState("");
 
-  const { data: lockers = [], isLoading } = useQuery({
+  const { data: lockers = [], isLoading, isFetched } = useQuery({
     queryKey: ["lockers", activeGroup],
     queryFn: async () => {
-      const { data } = await supabase
+      const { data, error } = await supabase
         .from("lockers")
         .select("*, employees(name, registration)")
         .eq("locker_group", activeGroup as "FEM_A" | "MASC_A" | "MASC_B")
         .order("number");
+      if (error) throw error;
       return (data ?? []) as Locker[];
     },
+    staleTime: 30_000,
   });
 
   const { data: employees = [] } = useQuery({
@@ -122,7 +124,7 @@ export default function ArmariosPage() {
 
         {groups.map(g => (
           <TabsContent key={g.value} value={g.value} className="mt-4">
-            {isLoading ? (
+          {!isFetched ? (
               <div className="text-center py-8 text-muted-foreground">Carregando...</div>
             ) : lockers.length === 0 ? (
               <div className="text-center py-12 text-muted-foreground">

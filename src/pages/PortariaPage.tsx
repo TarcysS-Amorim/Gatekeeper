@@ -8,7 +8,6 @@ import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { Badge } from "@/components/ui/badge";
 import { Textarea } from "@/components/ui/textarea";
 import { Plus, Search, Download, Pencil, Trash2, Filter } from "lucide-react";
 import { toast } from "sonner";
@@ -21,14 +20,6 @@ type GateEntry = {
   entry_time: string | null;
   name: string;
   company: string | null;
-  plate: string | null;
-  nf: string | null;
-  purchase_order: string | null;
-  unit_price: number | null;
-  total_price: number | null;
-  quantity: number | null;
-  net_weight: number | null;
-  material: string | null;
   notes: string | null;
   created_at: string;
 };
@@ -53,14 +44,6 @@ const emptyForm = {
   entry_time: format(new Date(), "HH:mm"),
   name: "",
   company: "",
-  plate: "",
-  nf: "",
-  purchase_order: "",
-  unit_price: "",
-  total_price: "",
-  quantity: "",
-  net_weight: "",
-  material: "",
   notes: "",
 };
 
@@ -78,10 +61,10 @@ export default function PortariaPage() {
     queryFn: async () => {
       let q = supabase
         .from("gate_entries")
-        .select("*")
+        .select("id, classification, entry_date, entry_time, name, company, notes, created_at")
         .order("entry_date", { ascending: false })
         .order("entry_time", { ascending: false });
-      if (search) q = q.or(`name.ilike.%${search}%,company.ilike.%${search}%,plate.ilike.%${search}%`);
+      if (search) q = q.or(`name.ilike.%${search}%,company.ilike.%${search}%`);
       if (filterClass !== "all") q = q.eq("classification", filterClass as "CLIENTE" | "FORNECEDOR" | "PRESTADOR_ISENTO" | "VISITANTE");
       const { data } = await q;
       return (data ?? []) as GateEntry[];
@@ -96,15 +79,7 @@ export default function PortariaPage() {
         entry_time: data.entry_time || null,
         name: data.name,
         company: data.company || null,
-        plate: data.plate || null,
-        nf: data.nf || null,
-        purchase_order: data.purchase_order || null,
-        material: data.material || null,
         notes: data.notes || null,
-        unit_price: data.unit_price ? Number(data.unit_price) : null,
-        total_price: data.total_price ? Number(data.total_price) : null,
-        quantity: data.quantity ? Number(data.quantity) : null,
-        net_weight: data.net_weight ? Number(data.net_weight) : null,
         created_by: user?.id,
       };
       if (data.id) {
@@ -152,14 +127,6 @@ export default function PortariaPage() {
       entry_time: entry.entry_time ?? "",
       name: entry.name,
       company: entry.company ?? "",
-      plate: entry.plate ?? "",
-      nf: entry.nf ?? "",
-      purchase_order: entry.purchase_order ?? "",
-      unit_price: entry.unit_price?.toString() ?? "",
-      total_price: entry.total_price?.toString() ?? "",
-      quantity: entry.quantity?.toString() ?? "",
-      net_weight: entry.net_weight?.toString() ?? "",
-      material: entry.material ?? "",
       notes: entry.notes ?? "",
     });
     setDialogOpen(true);
@@ -172,11 +139,9 @@ export default function PortariaPage() {
   };
 
   const exportCSV = () => {
-    const headers = ["Data", "Hora", "Classificação", "Nome", "Empresa", "Placa", "NF", "Pedido", "Material", "Quantidade", "Peso Líquido", "Preço Unit.", "Preço Total", "Obs"];
+    const headers = ["Data", "Hora", "Classificação", "Nome", "Empresa", "Obs"];
     const rows = entries.map(e => [
-      e.entry_date, e.entry_time ?? "", e.classification, e.name, e.company ?? "",
-      e.plate ?? "", e.nf ?? "", e.purchase_order ?? "", e.material ?? "",
-      e.quantity ?? "", e.net_weight ?? "", e.unit_price ?? "", e.total_price ?? "", e.notes ?? ""
+      e.entry_date, e.entry_time ?? "", e.classification, e.name, e.company ?? "", e.notes ?? ""
     ]);
     const csv = [headers, ...rows].map(r => r.map(v => `"${v}"`).join(",")).join("\n");
     const blob = new Blob(["\uFEFF" + csv], { type: "text/csv;charset=utf-8;" });
@@ -211,7 +176,7 @@ export default function PortariaPage() {
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
           <Input
             className="pl-9"
-            placeholder="Buscar por nome, empresa, placa..."
+            placeholder="Buscar por nome ou empresa..."
             value={search}
             onChange={e => setSearch(e.target.value)}
           />
@@ -239,17 +204,15 @@ export default function PortariaPage() {
                 <TableHead>Classificação</TableHead>
                 <TableHead>Nome</TableHead>
                 <TableHead>Empresa</TableHead>
-                <TableHead>Placa</TableHead>
-                <TableHead>NF</TableHead>
-                <TableHead>Material</TableHead>
+                <TableHead>Obs</TableHead>
                 {(canEdit || canDelete) && <TableHead className="w-20">Ações</TableHead>}
               </TableRow>
             </TableHeader>
             <TableBody>
               {isLoading ? (
-                <TableRow><TableCell colSpan={9} className="text-center py-8 text-muted-foreground">Carregando...</TableCell></TableRow>
+                <TableRow><TableCell colSpan={7} className="text-center py-8 text-muted-foreground">Carregando...</TableCell></TableRow>
               ) : entries.length === 0 ? (
-                <TableRow><TableCell colSpan={9} className="text-center py-8 text-muted-foreground">Nenhum registro encontrado</TableCell></TableRow>
+                <TableRow><TableCell colSpan={7} className="text-center py-8 text-muted-foreground">Nenhum registro encontrado</TableCell></TableRow>
               ) : entries.map(entry => (
                 <TableRow key={entry.id} className="hover:bg-muted/30">
                   <TableCell className="text-sm font-mono">{entry.entry_date}</TableCell>
@@ -261,9 +224,7 @@ export default function PortariaPage() {
                   </TableCell>
                   <TableCell className="font-medium text-sm">{entry.name}</TableCell>
                   <TableCell className="text-sm text-muted-foreground">{entry.company ?? "—"}</TableCell>
-                  <TableCell className="text-sm font-mono">{entry.plate ?? "—"}</TableCell>
-                  <TableCell className="text-sm">{entry.nf ?? "—"}</TableCell>
-                  <TableCell className="text-sm">{entry.material ?? "—"}</TableCell>
+                  <TableCell className="text-sm text-muted-foreground max-w-[150px] truncate">{entry.notes ?? "—"}</TableCell>
                   {(canEdit || canDelete) && (
                     <TableCell>
                       <div className="flex gap-1">
@@ -289,7 +250,7 @@ export default function PortariaPage() {
 
       {/* Dialog */}
       <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
-        <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+        <DialogContent className="max-w-lg max-h-[90vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle>{editEntry ? "Editar Registro" : "Novo Registro de Portaria"}</DialogTitle>
           </DialogHeader>
@@ -316,41 +277,9 @@ export default function PortariaPage() {
                 <Label>Nome *</Label>
                 <Input value={form.name} onChange={e => setForm(f => ({ ...f, name: e.target.value }))} placeholder="Nome completo" required />
               </div>
-              <div className="space-y-1">
-                <Label>Empresa</Label>
-                <Input value={form.company} onChange={e => setForm(f => ({ ...f, company: e.target.value }))} placeholder="Empresa" />
-              </div>
-              <div className="space-y-1">
-                <Label>Placa</Label>
-                <Input value={form.plate} onChange={e => setForm(f => ({ ...f, plate: e.target.value.toUpperCase() }))} placeholder="ABC-1234" className="font-mono" />
-              </div>
-              <div className="space-y-1">
-                <Label>NF</Label>
-                <Input value={form.nf} onChange={e => setForm(f => ({ ...f, nf: e.target.value }))} placeholder="Nota fiscal" />
-              </div>
-              <div className="space-y-1">
-                <Label>Pedido de Compra</Label>
-                <Input value={form.purchase_order} onChange={e => setForm(f => ({ ...f, purchase_order: e.target.value }))} />
-              </div>
-              <div className="space-y-1">
-                <Label>Material</Label>
-                <Input value={form.material} onChange={e => setForm(f => ({ ...f, material: e.target.value }))} />
-              </div>
-              <div className="space-y-1">
-                <Label>Quantidade</Label>
-                <Input type="number" step="0.001" value={form.quantity} onChange={e => setForm(f => ({ ...f, quantity: e.target.value }))} />
-              </div>
-              <div className="space-y-1">
-                <Label>Peso Líquido (kg)</Label>
-                <Input type="number" step="0.001" value={form.net_weight} onChange={e => setForm(f => ({ ...f, net_weight: e.target.value }))} />
-              </div>
-              <div className="space-y-1">
-                <Label>Preço Unitário</Label>
-                <Input type="number" step="0.01" value={form.unit_price} onChange={e => setForm(f => ({ ...f, unit_price: e.target.value }))} />
-              </div>
-              <div className="space-y-1">
-                <Label>Preço Total</Label>
-                <Input type="number" step="0.01" value={form.total_price} onChange={e => setForm(f => ({ ...f, total_price: e.target.value }))} />
+              <div className="col-span-2 space-y-1">
+                <Label>Empresa / Organização</Label>
+                <Input value={form.company} onChange={e => setForm(f => ({ ...f, company: e.target.value }))} placeholder="Empresa ou organização" />
               </div>
             </div>
             <div className="space-y-1">
