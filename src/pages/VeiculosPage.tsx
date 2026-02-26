@@ -26,12 +26,11 @@ type Vehicle = {
 };
 
 const statusOptions = [
-  { value: "ACTIVE", label: "Ativo", cls: "bg-green-100 text-green-800" },
-  { value: "PENDING", label: "Pendente", cls: "bg-yellow-100 text-yellow-800" },
-  { value: "BLOCKED", label: "Bloqueado", cls: "bg-red-100 text-red-800" },
+  { value: "FLUTUANTE", label: "Flutuante", cls: "bg-blue-100 text-blue-800" },
+  { value: "FIXO", label: "Fixo", cls: "bg-green-100 text-green-800" },
 ];
 
-const emptyForm = { plate: "", model: "", color: "", brand: "", year: "", status: "PENDING", notes: "", employee_id: "" };
+const emptyForm = { plate: "", model: "", color: "", brand: "", year: "", status: "FLUTUANTE", notes: "", employee_id: "" };
 
 export default function VeiculosPage() {
   const { user, role } = useAuth();
@@ -67,7 +66,7 @@ export default function VeiculosPage() {
         color: data.color || null,
         brand: data.brand || null,
         year: data.year ? Number(data.year) : null,
-        status: data.status as "ACTIVE" | "PENDING" | "BLOCKED",
+        status: (data.status === "FIXO" ? "ACTIVE" : "PENDING") as "ACTIVE" | "PENDING" | "BLOCKED",
         notes: data.notes || null,
         employee_id: data.employee_id || null,
         created_by: user?.id,
